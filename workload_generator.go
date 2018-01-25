@@ -21,67 +21,65 @@ func failOnError(err error, msg string) {
 type Add struct {
 	UserId string
 	Amount int
+	TransactionNum int
 }
 type Quote struct {
 	UserId      string
 	StockSymbol string
+	TransactionNum int
 }
 
 type Default struct {
 	UserId      string
 	StockSymbol string
 	Amount      int
+	TransactionNum int
 }
 
 type User struct {
 	UserId string
+	TransactionNum int
 }
 
 func add(r []string) {
 	toWebServer := Add{}
-	toWebServer.UserId = r[1]
-	s, err := strconv.ParseFloat(r[2], 64)
-	if err != nil {
-		//handle error
-		return
-	}
-	toWebServer.Amount = int(s * 10)
+	toWebServer.UserId = r[2]
+	toWebServer.Amount = floatStringToCents(r[3])
 
 	sendToWebServer(toWebServer, "AddFunds")
 }
 
 func quote(r []string) {
 	toWebServer := Quote{}
-	toWebServer.UserId = r[1]
-	toWebServer.StockSymbol = r[2]
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.UserId = r[2]
+	toWebServer.StockSymbol = r[3]
 
 	sendToWebServer(toWebServer, "GetQuote")
 }
 
 func buy(r []string) {
 	toWebServer := Default{}
-	toWebServer.UserId = r[1]
-	toWebServer.StockSymbol = r[2]
-	s, err := strconv.ParseFloat(r[3], 64)
-	if err != nil {
-		//handle error
-		return
-	}
-	toWebServer.Amount = int(s * 10)
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.UserId = r[2]
+	toWebServer.StockSymbol = r[3]
+	toWebServer.Amount = floatStringToCents(r[4])
 
 	sendToWebServer(toWebServer, "BuyStock")
 }
 
 func commitBuy(r []string) {
 	toWebServer := User{}
-	toWebServer.UserId = r[1]
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.UserId = r[2]
 
 	sendToWebServer(toWebServer, "CommitBuy")
 }
 
 func cancelBuy(r []string) {
 	toWebServer := User{}
-	toWebServer.UserId = r[1]
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.UserId = r[2]
 
 	sendToWebServer(toWebServer, "CancelBuy")
 }
@@ -89,102 +87,84 @@ func cancelBuy(r []string) {
 func sell(r []string) {
 
 	toWebServer := Default{}
-	toWebServer.UserId = r[1]
-	toWebServer.StockSymbol = r[2]
-	s, err := strconv.ParseFloat(r[3], 64)
-	if err != nil {
-		//handle error
-		fmt.Println("sell error")
-
-		return
-	}
-	toWebServer.Amount = int(s * 10)
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.UserId = r[2]
+	toWebServer.StockSymbol = r[3]
+	toWebServer.Amount = floatStringToCents(r[4])
 
 	sendToWebServer(toWebServer, "SellStock")
 }
 
 func commitSell(r []string) {
 	toWebServer := User{}
-	toWebServer.UserId = r[1]
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.UserId = r[2]
 
 	sendToWebServer(toWebServer, "CommitSell")
 }
 
 func cancelSell(r []string) {
 	toWebServer := User{}
-	toWebServer.UserId = r[1]
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.UserId = r[2]
 
 	sendToWebServer(toWebServer, "CancelSell")
 }
 
 func setBuyAmount(r []string) {
 	toWebServer := Default{}
-	toWebServer.UserId = r[1]
-	toWebServer.StockSymbol = r[2]
-	s, err := strconv.ParseFloat(r[3], 64)
-	if err != nil {
-		//handle error
-		return
-	}
-	toWebServer.Amount = int(s * 10)
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.UserId = r[2]
+	toWebServer.StockSymbol = r[3]
+	toWebServer.Amount = floatStringToCents(r[4])
 
 	sendToWebServer(toWebServer, "SetBuyAmount")
 }
 
 func setBuyTrigger(r []string) {
 	toWebServer := Default{}
-	toWebServer.UserId = r[1]
-	toWebServer.StockSymbol = r[2]
-	s, err := strconv.ParseFloat(r[3], 64)
-	if err != nil {
-		//handle error
-		return
-	}
-	toWebServer.Amount = int(s * 10)
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.UserId = r[2]
+	toWebServer.StockSymbol = r[3]
+	toWebServer.Amount = floatStringToCents(r[4])
 
 	sendToWebServer(toWebServer, "SetBuyTrigger")
 }
 
 func cancelSetBuy(r []string) {
 	toWebServer := Quote{}
-	toWebServer.UserId = r[1]
-	toWebServer.StockSymbol = r[2]
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.UserId = r[2]
+	toWebServer.StockSymbol = r[3]
 
 	sendToWebServer(toWebServer, "CancelSetBuy")
 }
 
 func setSellAmount(r []string) {
 	toWebServer := Default{}
-	toWebServer.UserId = r[1]
-	toWebServer.StockSymbol = r[2]
-	s, err := strconv.ParseFloat(r[3], 64)
-	if err != nil {
-		//handle error
-		return
-	}
-	toWebServer.Amount = int(s * 10)
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.UserId = r[2]
+	toWebServer.StockSymbol = r[3]
+	toWebServer.Amount = floatStringToCents(r[4])
 
 	sendToWebServer(toWebServer, "SetSellAmount")
 }
 
 func setSellTrigger(r []string) {
 	toWebServer := Default{}
-	toWebServer.UserId = r[1]
-	toWebServer.StockSymbol = r[2]
-	s, err := strconv.ParseFloat(r[3], 64)
-	if err != nil {
-		//handle error
-		return
-	}
-	toWebServer.Amount = int(s * 10)
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.UserId = r[2]
+	toWebServer.StockSymbol = r[3]
+	toWebServer.Amount = floatStringToCents(r[4])
 
 	sendToWebServer(toWebServer, "SetSellTrigger")
 }
 
 func cancelSetSell(r []string) {
 	toWebServer := Quote{}
-	toWebServer.UserId = r[1]
-	toWebServer.StockSymbol = r[2]
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.UserId = r[2]
+	toWebServer.StockSymbol = r[3]
 
 	sendToWebServer(toWebServer, "CancelSetSell")
 }
@@ -200,7 +180,8 @@ func dumplog(r []string) {
 
 func displaySummary(r []string) {
 	toWebServer := User{}
-	toWebServer.UserId = r[1]
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.UserId = r[2]
 
 	sendToWebServer(toWebServer, "DisplaySummary")
 }
@@ -210,6 +191,11 @@ func sendToWebServer(r interface{}, s string) {
 	resp, err := http.Post("http://localhost:8080/"+s, "application/json", bytes.NewBuffer(jsonValue))
 	failOnError(err, "Error sending request")
 	defer resp.Body.Close()
+}
+
+func floatStringToCents(val string) int {
+	cents , _:= strconv.Atoi(strings.Replace(val, ".", "", 1))
+	return cents
 }
 
 func main() {
@@ -222,13 +208,13 @@ func main() {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		commandText := scanner.Text()
-		splitCommandText := strings.Fields(commandText)
-		command := splitCommandText[1]
+		commandText = strings.Replace(commandText,"[","",1)
+		commandText = strings.Replace(commandText,"]",",",1)
 		//commandBytes := []byte(command)
 
-		result := strings.Split(command, ",")
+		result := strings.Split(commandText, ",")
 		//fmt.Println(result[0])
-		switch result[0] {
+		switch result[1] {
 		case "ADD":
 			add(result)
 		case "QUOTE":
