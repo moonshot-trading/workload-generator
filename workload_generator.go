@@ -19,25 +19,30 @@ func failOnError(err error, msg string) {
 }
 
 type Add struct {
-	UserId string
-	Amount int
+	UserId         string
+	Amount         int
 	TransactionNum int
 }
 type Quote struct {
-	UserId      string
-	StockSymbol string
+	UserId         string
+	StockSymbol    string
 	TransactionNum int
 }
 
 type Default struct {
-	UserId      string
-	StockSymbol string
-	Amount      int
+	UserId         string
+	StockSymbol    string
+	Amount         int
 	TransactionNum int
 }
 
 type User struct {
-	UserId string
+	UserId         string
+	TransactionNum int
+}
+
+type Dumplog struct {
+	Filename       string
 	TransactionNum int
 }
 
@@ -171,6 +176,11 @@ func cancelSetSell(r []string) {
 
 func dumplog(r []string) {
 	if len(r) == 2 {
+
+		toWebServer := Dumplog{}
+		toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+		toWebServer.Filename = r[2]
+		sendToWebServer(toWebServer, "Dumplog")
 		//dumplog without username
 		//dumplogall
 	} else {
@@ -194,7 +204,7 @@ func sendToWebServer(r interface{}, s string) {
 }
 
 func floatStringToCents(val string) int {
-	cents , _:= strconv.Atoi(strings.Replace(val, ".", "", 1))
+	cents, _ := strconv.Atoi(strings.Replace(val, ".", "", 1))
 	return cents
 }
 
@@ -208,13 +218,13 @@ func main() {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		commandText := scanner.Text()
-		commandText = strings.Replace(commandText,"[","",1)
-		commandText = strings.Replace(commandText,"]",",",1)
+		commandText = strings.Replace(commandText, "[", "", 1)
+		commandText = strings.Replace(commandText, "]", ",", 1)
 		//commandBytes := []byte(command)
 
 		result := strings.Split(commandText, ",")
-		//fmt.Println(result[0])
-		switch result[1] {
+		commandText = strings.Replace(result[1], " ", "", 1)
+		switch commandText {
 		case "ADD":
 			add(result)
 		case "QUOTE":
