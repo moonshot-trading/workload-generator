@@ -48,6 +48,7 @@ type Dumplog struct {
 
 func add(r []string) {
 	toWebServer := Add{}
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[0])
 	toWebServer.UserId = r[2]
 	toWebServer.Amount = floatStringToCents(r[3])
 
@@ -56,7 +57,7 @@ func add(r []string) {
 
 func quote(r []string) {
 	toWebServer := Quote{}
-	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[0])
 	toWebServer.UserId = r[2]
 	toWebServer.StockSymbol = r[3]
 
@@ -65,7 +66,7 @@ func quote(r []string) {
 
 func buy(r []string) {
 	toWebServer := Default{}
-	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[0])
 	toWebServer.UserId = r[2]
 	toWebServer.StockSymbol = r[3]
 	toWebServer.Amount = floatStringToCents(r[4])
@@ -75,7 +76,7 @@ func buy(r []string) {
 
 func commitBuy(r []string) {
 	toWebServer := User{}
-	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[0])
 	toWebServer.UserId = r[2]
 
 	sendToWebServer(toWebServer, "CommitBuy")
@@ -83,7 +84,7 @@ func commitBuy(r []string) {
 
 func cancelBuy(r []string) {
 	toWebServer := User{}
-	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[0])
 	toWebServer.UserId = r[2]
 
 	sendToWebServer(toWebServer, "CancelBuy")
@@ -92,7 +93,7 @@ func cancelBuy(r []string) {
 func sell(r []string) {
 
 	toWebServer := Default{}
-	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[0])
 	toWebServer.UserId = r[2]
 	toWebServer.StockSymbol = r[3]
 	toWebServer.Amount = floatStringToCents(r[4])
@@ -102,7 +103,7 @@ func sell(r []string) {
 
 func commitSell(r []string) {
 	toWebServer := User{}
-	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[0])
 	toWebServer.UserId = r[2]
 
 	sendToWebServer(toWebServer, "CommitSell")
@@ -110,7 +111,7 @@ func commitSell(r []string) {
 
 func cancelSell(r []string) {
 	toWebServer := User{}
-	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[0])
 	toWebServer.UserId = r[2]
 
 	sendToWebServer(toWebServer, "CancelSell")
@@ -118,7 +119,7 @@ func cancelSell(r []string) {
 
 func setBuyAmount(r []string) {
 	toWebServer := Default{}
-	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[0])
 	toWebServer.UserId = r[2]
 	toWebServer.StockSymbol = r[3]
 	toWebServer.Amount = floatStringToCents(r[4])
@@ -128,7 +129,7 @@ func setBuyAmount(r []string) {
 
 func setBuyTrigger(r []string) {
 	toWebServer := Default{}
-	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[0])
 	toWebServer.UserId = r[2]
 	toWebServer.StockSymbol = r[3]
 	toWebServer.Amount = floatStringToCents(r[4])
@@ -138,7 +139,7 @@ func setBuyTrigger(r []string) {
 
 func cancelSetBuy(r []string) {
 	toWebServer := Quote{}
-	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[0])
 	toWebServer.UserId = r[2]
 	toWebServer.StockSymbol = r[3]
 
@@ -147,7 +148,7 @@ func cancelSetBuy(r []string) {
 
 func setSellAmount(r []string) {
 	toWebServer := Default{}
-	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[0])
 	toWebServer.UserId = r[2]
 	toWebServer.StockSymbol = r[3]
 	toWebServer.Amount = floatStringToCents(r[4])
@@ -157,7 +158,7 @@ func setSellAmount(r []string) {
 
 func setSellTrigger(r []string) {
 	toWebServer := Default{}
-	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[0])
 	toWebServer.UserId = r[2]
 	toWebServer.StockSymbol = r[3]
 	toWebServer.Amount = floatStringToCents(r[4])
@@ -167,7 +168,7 @@ func setSellTrigger(r []string) {
 
 func cancelSetSell(r []string) {
 	toWebServer := Quote{}
-	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[0])
 	toWebServer.UserId = r[2]
 	toWebServer.StockSymbol = r[3]
 
@@ -178,7 +179,7 @@ func dumplog(r []string) {
 	if len(r) == 2 {
 
 		toWebServer := Dumplog{}
-		toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+		toWebServer.TransactionNum, _ = strconv.Atoi(r[0])
 		toWebServer.Filename = r[2]
 		sendToWebServer(toWebServer, "Dumplog")
 		//dumplog without username
@@ -190,7 +191,7 @@ func dumplog(r []string) {
 
 func displaySummary(r []string) {
 	toWebServer := User{}
-	toWebServer.TransactionNum, _ = strconv.Atoi(r[1])
+	toWebServer.TransactionNum, _ = strconv.Atoi(r[0])
 	toWebServer.UserId = r[2]
 
 	sendToWebServer(toWebServer, "DisplaySummary")
@@ -221,8 +222,10 @@ func main() {
 		commandText = strings.Replace(commandText, "[", "", 1)
 		commandText = strings.Replace(commandText, "]", ",", 1)
 		//commandBytes := []byte(command)
-
 		result := strings.Split(commandText, ",")
+		for index, _ := range result {
+			result[index] = strings.Replace(result[index], " ", "", 1)
+		}
 		commandText = strings.Replace(result[1], " ", "", 1)
 		switch commandText {
 		case "ADD":
