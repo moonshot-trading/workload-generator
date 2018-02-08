@@ -44,6 +44,7 @@ type User struct {
 type Dumplog struct {
 	Filename       string
 	TransactionNum int
+	Username       string
 }
 
 func add(r []string) {
@@ -177,15 +178,22 @@ func cancelSetSell(r []string) {
 
 func dumplog(r []string) {
 	if len(r) == 2 {
-
 		toWebServer := Dumplog{}
 		toWebServer.TransactionNum, _ = strconv.Atoi(r[0])
 		toWebServer.Filename = r[2]
 		sendToWebServer(toWebServer, "Dumplog")
 		//dumplog without username
 		//dumplogall
-	} else {
+	} else if len(r) == 3{
+		toWebServer := Dumplog{}
+		toWebServer.TransactionNum, _ = strconv.Atoi(r[0])
+		toWebServer.Filename = r[2]
+		toWebServer.Username = r[3]
+		sendToWebServer(toWebServer, "Dumplog")
 		//dumplog user
+	} else {
+		//what
+		panic("unexpected number of params for dump log\n")
 	}
 }
 
@@ -223,7 +231,7 @@ func main() {
 		commandText = strings.Replace(commandText, "]", ",", 1)
 		//commandBytes := []byte(command)
 		result := strings.Split(commandText, ",")
-		for index, _ := range result {
+		for index := range result {
 			result[index] = strings.Replace(result[index], " ", "", 1)
 		}
 		commandText = strings.Replace(result[1], " ", "", 1)
