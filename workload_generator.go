@@ -206,7 +206,6 @@ func displaySummary(r []string) {
 }
 
 func sendToWebServer(r interface{}, s string) {
-	fmt.Println("sending dump to web")
 	jsonValue, _ := json.Marshal(r)
 	resp, err := http.Post("http://localhost:8080/"+s, "application/json", bytes.NewBuffer(jsonValue))
 	failOnError(err, "Error sending request")
