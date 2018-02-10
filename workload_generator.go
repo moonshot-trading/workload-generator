@@ -177,14 +177,14 @@ func cancelSetSell(r []string) {
 }
 
 func dumplog(r []string) {
-	if len(r) == 2 {
+	if len(r) == 3 {
 		toWebServer := Dumplog{}
 		toWebServer.TransactionNum, _ = strconv.Atoi(r[0])
 		toWebServer.Filename = r[2]
 		sendToWebServer(toWebServer, "Dumplog")
 		//dumplog without username
 		//dumplogall
-	} else if len(r) == 3{
+	} else if len(r) == 4 {
 		toWebServer := Dumplog{}
 		toWebServer.TransactionNum, _ = strconv.Atoi(r[0])
 		toWebServer.Filename = r[2]
@@ -206,6 +206,7 @@ func displaySummary(r []string) {
 }
 
 func sendToWebServer(r interface{}, s string) {
+	fmt.Println("sending dump to web")
 	jsonValue, _ := json.Marshal(r)
 	resp, err := http.Post("http://localhost:8080/"+s, "application/json", bytes.NewBuffer(jsonValue))
 	failOnError(err, "Error sending request")
@@ -219,7 +220,7 @@ func floatStringToCents(val string) int {
 
 func main() {
 	fmt.Println("Parsing workload file...")
-	file, err := os.Open("workload.txt")
+	file, err := os.Open("10User_testWorkLoad.txt")
 	failOnError(err, "Could not open file!")
 
 	defer file.Close()
