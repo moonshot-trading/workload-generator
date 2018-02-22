@@ -5,11 +5,18 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 )
+
+var client = &http.Client{}
+
+var numUsers = 10
 
 func failOnError(err error, msg string) {
 	if err != nil {
@@ -206,10 +213,22 @@ func displaySummary(r []string) {
 }
 
 func sendToWebServer(r interface{}, s string) {
+
+	//time.Sleep(time.Millisecond * 10)
 	jsonValue, _ := json.Marshal(r)
-	resp, err := http.Post("http://localhost:8080/"+s, "application/json", bytes.NewBuffer(jsonValue))
-	failOnError(err, "Error sending request")
-	defer resp.Body.Close()
+	req, err := http.NewRequest("POST", "http://localhost:8080/"+s, bytes.NewBuffer(jsonValue))
+	req.Close = true
+
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := client.Do(req)
+
+	//resp, err := http.Post("http://localhost:8080/"+s, "application/json", bytes.NewBuffer(jsonValue))
+	if resp != nil {
+		resp.Body.Close()
+	}
+	if err != nil {
+		failOnError(err, "Error sending request")
+	}
 }
 
 func floatStringToCents(val string) int {
@@ -217,9 +236,29 @@ func floatStringToCents(val string) int {
 	return cents
 }
 
-func main() {
-	fmt.Println("Parsing workload file...")
-	file, err := os.Open("10User_testWorkLoad.txt")
+func doDumplog() {
+	file, err := os.Open("split/testLOG")
+	failOnError(err, "Could not open file!")
+
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		commandText := scanner.Text()
+		commandText = strings.Replace(commandText, "[", "", 1)
+		commandText = strings.Replace(commandText, "]", ",", 1)
+		//commandBytes := []byte(command)
+		result := strings.Split(commandText, ",")
+		for index := range result {
+			result[index] = strings.Replace(result[index], " ", "", 1)
+		}
+		dumplog(result)
+	}
+}
+
+func handleUserFile(name string, wg *sync.WaitGroup) {
+
+	file, err := os.Open("split/" + name)
 	failOnError(err, "Could not open file!")
 
 	defer file.Close()
@@ -271,8 +310,32 @@ func main() {
 		}
 
 	}
-
 	failOnError(scanner.Err(), "Error reading file")
+	wg.Done()
 
+}
+
+func main() {
+
+	fmt.Println("Parsing workload file...")
+
+	files, err := ioutil.ReadDir("./split")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var wg sync.WaitGroup
+	wg.Add(numUsers)
+
+	for _, f := range files {
+		if f.Name() != "testLOG" {
+			go handleUserFile(f.Name(), &wg)
+		}
+		fmt.Println(f.Name())
+	}
+
+	wg.Wait()
+
+	doDumplog()
 	fmt.Println("Done parsing workload file.")
 }
