@@ -38,3 +38,7 @@ out/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
+
+# ignore executable
+workload_generator
+

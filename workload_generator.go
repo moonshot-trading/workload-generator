@@ -14,15 +14,37 @@ import (
 	"sync"
 )
 
-var client = &http.Client{}
+var (
+	client = &http.Client{}
+	config = func() WorkloadGeneratorConfig {
+		commandLineArgs := os.Args[1:]
 
-var numUsers = 10
+		if len(commandLineArgs) < 1 || len(commandLineArgs) > 2 {
+			fmt.Println("***ERROR INCORRECT ARGS*** Usage: numUsers webServerURL(optional)")
+			os.Exit(0)
+		}
+
+		numUsers, _ := strconv.Atoi(commandLineArgs[0])
+
+		if len(commandLineArgs) == 1 {
+			return WorkloadGeneratorConfig{numUsers, "http://localhost:8080/"}
+
+		}
+
+		return WorkloadGeneratorConfig{numUsers, commandLineArgs[1]}
+	}()
+)
 
 func failOnError(err error, msg string) {
 	if err != nil {
 		fmt.Printf("%s: %s", msg, err)
 		panic(err)
 	}
+}
+
+type WorkloadGeneratorConfig struct {
+	NumUsers     int
+	WebServerURL string
 }
 
 type Add struct {
@@ -213,16 +235,13 @@ func displaySummary(r []string) {
 }
 
 func sendToWebServer(r interface{}, s string) {
-
-	//time.Sleep(time.Millisecond * 10)
 	jsonValue, _ := json.Marshal(r)
-	req, err := http.NewRequest("POST", "http://localhost:8080/"+s, bytes.NewBuffer(jsonValue))
+	req, err := http.NewRequest("POST", config.WebServerURL+s, bytes.NewBuffer(jsonValue))
 	req.Close = true
 
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := client.Do(req)
 
-	//resp, err := http.Post("http://localhost:8080/"+s, "application/json", bytes.NewBuffer(jsonValue))
 	if resp != nil {
 		resp.Body.Close()
 	}
@@ -316,7 +335,6 @@ func handleUserFile(name string, wg *sync.WaitGroup) {
 }
 
 func main() {
-
 	fmt.Println("Parsing workload file...")
 
 	files, err := ioutil.ReadDir("./split")
@@ -325,7 +343,7 @@ func main() {
 	}
 
 	var wg sync.WaitGroup
-	wg.Add(numUsers)
+	wg.Add(config.NumUsers)
 
 	for _, f := range files {
 		if f.Name() != "testLOG" {
