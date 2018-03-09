@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 )
 
 var (
@@ -342,6 +343,8 @@ func main() {
 		log.Fatal(err)
 	}
 
+	startTime := time.Now()
+
 	var wg sync.WaitGroup
 	wg.Add(config.NumUsers)
 
@@ -355,5 +358,9 @@ func main() {
 	wg.Wait()
 
 	doDumplog()
+
+	elapsedTime := time.Since(startTime)
+
 	fmt.Println("Done parsing workload file.")
+	fmt.Printf("Took %s\n", elapsedTime)
 }
