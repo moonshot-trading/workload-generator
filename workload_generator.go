@@ -252,7 +252,12 @@ func sendToWebServer(r interface{}, s string) {
 }
 
 func floatStringToCents(val string) int {
-	cents, _ := strconv.Atoi(strings.Replace(val, ".", "", 1))
+	cents, err := strconv.Atoi(strings.Replace(val, ".", "", 1))
+
+	if err != nil {
+		return -1
+	}
+
 	return cents
 }
 
